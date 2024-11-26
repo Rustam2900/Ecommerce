@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import ChangePasswordView, UpdateProfileView, RegisterView, MyObtainTokenPairView
+from .views import ChangePasswordView, UpdateProfileView, RegisterView, MyObtainTokenPairView, ForgetPasswordView, \
+    ForgetChangePasswordView
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -12,8 +13,10 @@ urlpatterns = [
         path('drf-auth/', include('rest_framework.urls')),
 
         # change
-        path('change_password/<int:pk>/', ChangePasswordView.as_view(), name='auth_change_password'),
-        path('update_profile/<int:pk>/', UpdateProfileView.as_view(), name='auth_update_profile'),
+        path('change_password/', ChangePasswordView.as_view(), name='auth_change_password'),
+        path('update_profile/', UpdateProfileView.as_view(), name='auth_update_profile'),
+        path('send_gmail_code/', ForgetPasswordView.as_view(), name='forgot_password'),
+        path('forget_change_password/', ForgetChangePasswordView.as_view(), name='auth_change_password'),
     ])),
     path('social-auth', include([
         path('auth/', include('drf_social_oauth2.urls')),

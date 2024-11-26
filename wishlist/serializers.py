@@ -1,13 +1,8 @@
 from rest_framework import serializers
 
 from products.models import Product
+from products.serializers import ProductSerializer
 from .models import Wishlist
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        exclude = ['created_at', 'updated_at']
 
 
 class WishlistGetSerializer(serializers.ModelSerializer):

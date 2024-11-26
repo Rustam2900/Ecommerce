@@ -2,7 +2,7 @@ from typing import Dict, Any
 from rest_framework.validators import UniqueValidator
 from .models import User
 from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
 
@@ -102,8 +102,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         user = self.context['request'].user
 
-        if user.pk != instance.pk:
-            raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
+        # if user.pk != instance.pk:
+        #     raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
 
         instance.first_name = validated_data['first_name']
         instance.last_name = validated_data['last_name']
@@ -112,4 +112,27 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
+        return instance
+
+
+class ForgetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ForgetChangePasswordSerializers(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, required=True)
+    code = serializers.IntegerField()
+
+    def validate_old_password(self, value):
+        user_email = self.initial_data.get('email')
+        user = User.objects.get(email=user_email)
+
+        if not check_password(value, user.password):
+            raise serializers.ValidationError("Old password is not correct")
+        return value
+
+    def update(self, instance, validated_data):
+        instance.password = make_password(validated_data['password'])
+        instance.save()
         return instance

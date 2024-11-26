@@ -22,7 +22,7 @@ class Product(TimeStampModel):
     discount = models.ForeignKey(Discount, on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
-        return self.slug
+        return f"{self.id} {self.slug}"
 
 
 class Color(TimeStampModel):
